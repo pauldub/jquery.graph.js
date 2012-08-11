@@ -1,3 +1,4 @@
+
 /*!
  * Original author: Paul d'Hubert
  */
@@ -40,11 +41,12 @@
             fillStyle: '#fff',
             animationSpeed: 'slow',
             easing: undefined,
+            debug: false,
             draw: function onDraw(graph) {
                 if (graphTypes[graph.options.type]) {
                     graphTypes[graph.options.type](graph);
                 } else {
-                    console.log("Cannot handle this graph type : " + graph.options.type);
+                    graph.log("Cannot handle this graph type : " + graph.options.type);
                 }
             },
         };
@@ -72,20 +74,26 @@
         }
     };
 
+    Plugin.prototype.log = function log (message) {
+        if (this.options.debug === true) {
+            console.log(message);
+        }
+    };
+
     Plugin.prototype.update = function update () {
-        console.log("Update...");
+        this.log("Update...");
         var that = this;
         $.getJSON(this.options.refreshUrl, function (response) {
             that.options.update(that, response);
-            console.log("Done !");
+            that.log("Done !");
             that.draw();
         });
     };
 
     Plugin.prototype.draw = function draw () {
-        console.log("Draw " + this.options.type);
+        this.log("Draw " + this.options.type);
         this.options.draw(this);
-        console.log("Done !");
+        this.log("Done !");
     };
 
     $.fn[pluginName] = function ( options ) {
