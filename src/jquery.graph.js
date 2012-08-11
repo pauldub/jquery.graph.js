@@ -1,38 +1,8 @@
-
 /*!
  * Original author: Paul d'Hubert
  */
 
 ;(function ( $, window, document, undefined ) {
-    var graphTypes = {
-        verticalBar: function drawVerticalBar (graph) {
-            var canvas = $(graph.element),
-                width = graph.element.width,
-                height = graph.element.height,
-                layer = canvas.getLayer('vBar');
-            
-            var barHeight = (graph.data.current / graph.data.max) * height;
-
-            if (!layer) {
-                canvas.drawRect({
-                    layer: true,
-                    name: 'vBar',
-                    fillStyle: graph.options.fillStyle,
-                    x: 0,
-                    y: height - barHeight,
-                    width: width,
-                    height: barHeight,
-                    fromCenter: false
-                });
-            } else {
-                canvas.animateLayer('vBar', {
-                    y: height - barHeight,
-                    height: barHeight
-                }, graph.options.animationSpeed, graph.options.easing);
-            }
-        },
-    };
-
     var pluginName = 'graph',
         defaults = {
             refreshInterval: 1000,
@@ -44,13 +14,13 @@
             easing: undefined,
             debug: false,
             draw: function onDraw(graph) {
-                if (graphTypes[graph.options.type]) {
-                    graphTypes[graph.options.type](graph);
+                if (graph.graphTypes[graph.options.type]) {
+                    graph.graphTypes[graph.options.type](graph);
                 } else {
                     graph.log("Cannot handle this graph type : " + graph.options.type);
                 }
             },
-        };
+       };
 
     function Plugin( element, options) {
         this.element = element;
@@ -60,6 +30,10 @@
         
         this._defaults = defaults;
         this._name = pluginName;
+        
+        //Extends default graphTypes with the one added to the public public
+        //plugin prototype.
+        this.graphTypes = $.extend({}, this.graphTypes, $.fn.graph.prototype.graphTypes);
         
         this.init();
     }
@@ -102,6 +76,35 @@
         this.log("Draw " + this.options.type);
         this.options.draw(this);
         this.log("Done !");
+    };
+
+    Plugin.prototype.graphTypes = {
+        verticalBar: function drawVerticalBar (graph) {
+            var canvas = $(graph.element),
+                width = graph.element.width,
+                height = graph.element.height,
+                layer = canvas.getLayer('vBar');
+            
+            var barHeight = (graph.data.current / graph.data.max) * height;
+
+            if (!layer) {
+                canvas.drawRect({
+                    layer: true,
+                    name: 'vBar',
+                    fillStyle: graph.options.fillStyle,
+                    x: 0,
+                    y: height - barHeight,
+                    width: width,
+                    height: barHeight,
+                    fromCenter: false
+                });
+            } else {
+                canvas.animateLayer('vBar', {
+                    y: height - barHeight,
+                    height: barHeight
+                }, graph.options.animationSpeed, graph.options.easing);
+            }
+         },
     };
 
     $.fn[pluginName] = function ( options ) {
