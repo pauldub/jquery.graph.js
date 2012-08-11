@@ -37,8 +37,9 @@
         defaults = {
             refreshInterval: 1000,
             refreshUrl: undefined,
+            refresh: false,
             type: 'verticalBar',
-            fillStyle: '#fff',
+            fillStyle: "#4c4",
             animationSpeed: 'slow',
             easing: undefined,
             debug: false,
@@ -65,7 +66,8 @@
 
     Plugin.prototype.init = function init () {
         var that = this;
-        if (this.options.refreshUrl !== undefined) {
+        if (this.options.refreshUrl !== undefined || this.options.refresh === true) {
+            this.draw();
             setInterval(function update() {
                 that.update();
             }, this.options.refreshInterval);
@@ -82,12 +84,18 @@
 
     Plugin.prototype.update = function update () {
         this.log("Update...");
-        var that = this;
-        $.getJSON(this.options.refreshUrl, function (response) {
-            that.options.update(that, response);
+        if (this.options.refreshUrl !== undefined) {
+            var that = this;
+            $.getJSON(this.options.refreshUrl, function (response) {
+                that.options.update(that, response);
+                that.log("Done !");
+                that.draw();
+            });
+        } else {
+            this.options.update(this);
+            this.draw();
             that.log("Done !");
-            that.draw();
-        });
+        }
     };
 
     Plugin.prototype.draw = function draw () {
@@ -104,5 +112,4 @@
             }
         });
     }
-
 })( jQuery, window, document );
