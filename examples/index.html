@@ -1,0 +1,59 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>jQuery.graph.js</title>
+  
+    <style type="text/css">
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+
+      #verticalBar {
+        margin-top: 100px;
+      }
+    </style>
+  </head>
+  </head>
+  <body>
+      <canvas width="100" height="250" id="verticalBar"></canvas>
+      <canvas width="100" height="250" id="verticalBarRefresh"></canvas>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/caleb531/jcanvas/master/jcanvas.js"></script>
+    <script type="text/javascript" src="../src/jquery.graph.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#verticalBar').graph({
+                type: 'verticalBar',
+                data: {
+                    current: 5,
+                    max: 10
+                }
+            });
+
+            $('#verticalBarRefresh').graph({
+                type: 'verticalBar',
+                refresh: true,
+                refreshInterval: 500,
+                update: function (graph) {
+                    if (graph.data.current >= graph.data.max)
+                       graph.data.toTheSky = false;
+
+                    if (graph.data.current <= 0)
+                        graph.data.toTheSky = true;
+
+                    if (graph.data.toTheSky)
+                        graph.data.current++;
+                    else
+                        graph.data.current--;
+                },
+                data: {
+                    current: 0,
+                    max: 10
+                }
+            });
+        });
+    </script>
+  </body>
+</html>
